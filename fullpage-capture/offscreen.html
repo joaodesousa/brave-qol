@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <!-- Never visible. Exists only to give the service worker a DOM context
+         with a clipboard, which service workers themselves do not have. -->
+    <div id="staging" contenteditable="true"></div>
+    <script src="offscreen.js"></script>
+  </body>
+</html>

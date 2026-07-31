@@ -1,0 +1,11 @@
+# OS cruft
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Packaged extension builds and signing keys
+dist/ — never commit a .pem, it is the
+# private key that identifies the extension in the Chrome Web Store.
+*.zip
+*.crx
+*.pem

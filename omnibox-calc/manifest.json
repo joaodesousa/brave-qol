@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Brave QoL: Omnibox Calc",
+  "version": "1.0.0",
+  "description": "Instant math calculations in the address bar. Type '=' followed by a space and your expression.",
+  "minimum_chrome_version": "116",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "omnibox": {
+    "keyword": "="
+  },
+  "permissions": ["activeTab", "scripting", "clipboardWrite"],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

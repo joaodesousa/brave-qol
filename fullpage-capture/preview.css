@@ -1,0 +1,270 @@
+/* Same restraint as the popup: one surface, hairlines, near-monochrome, the
+   accent used once. The screenshot is the subject; the chrome around it
+   should be quiet enough to judge the image against. */
+
+:root {
+  color-scheme: light dark;
+
+  --fg: #1d1d1f;
+  --fg-secondary: #86868b;
+  --fg-tertiary: #aeaeb2;
+  --surface: #ffffff;
+  --canvas: #f5f5f7;
+  --hover: rgba(0, 0, 0, 0.045);
+  --active: rgba(0, 0, 0, 0.075);
+  --hairline: rgba(0, 0, 0, 0.09);
+  --accent: #0071e3;
+  --accent-fg: #ffffff;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 10px 30px rgba(0, 0, 0, 0.07);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fg: #f5f5f7;
+    --fg-secondary: #98989d;
+    --fg-tertiary: #6e6e73;
+    --surface: #1c1c1e;
+    --canvas: #111113;
+    --hover: rgba(255, 255, 255, 0.06);
+    --active: rgba(255, 255, 255, 0.1);
+    --hairline: rgba(255, 255, 255, 0.1);
+    --accent: #0a84ff;
+    --accent-fg: #ffffff;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 12px 34px rgba(0, 0, 0, 0.45);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--canvas);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- top bar ---------- */
+
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.bar__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.bar__title {
+  font-weight: 550;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bar__sub {
+  color: var(--fg-tertiary);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+.sep {
+  width: 1px;
+  height: 18px;
+  margin: 0 2px;
+  background: var(--hairline);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--hairline);
+  border-radius: 7px;
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: default;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.btn svg {
+  width: 14px;
+  height: 14px;
+  color: var(--fg-secondary);
+}
+
+.btn:hover {
+  background: var(--hover);
+}
+
+.btn:active {
+  background: var(--active);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.btn[disabled] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.btn--primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.btn--primary:hover,
+.btn--primary:active {
+  background: var(--accent);
+  filter: brightness(1.08);
+}
+
+.btn.is-active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn.is-active svg {
+  color: var(--accent);
+}
+
+/* ---------- stage ---------- */
+
+.stage {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+  overflow: auto;
+}
+
+.frame {
+  position: relative;
+  align-self: flex-start;
+  max-width: 1100px;
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+/* Actual-pixels view: one image pixel per CSS pixel, so what you judge is
+   what was captured rather than a browser downscale of it. */
+.frame.is-actual {
+  max-width: none;
+  width: auto;
+  flex: none;
+}
+
+#image {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Ask for the better downscaling filter in the fitted view; the difference
+     on a 60%-scaled screenshot of text is visible. */
+  image-rendering: high-quality;
+}
+
+.frame.is-actual #image {
+  width: auto;
+  max-width: none;
+}
+
+/* ---------- crop ---------- */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  cursor: crosshair;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+/* The selection is a hole punched in the dimming layer, so the region being
+   kept is shown at full fidelity rather than through a tint. */
+.selection {
+  position: absolute;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+  outline: 1px solid rgba(255, 255, 255, 0.9);
+}
+
+.overlay.has-selection {
+  background: transparent;
+}
+
+/* ---------- empty state ---------- */
+
+.empty {
+  align-self: center;
+  max-width: 380px;
+  text-align: center;
+}
+
+.empty__title {
+  margin: 0 0 4px;
+  font-weight: 550;
+}
+
+.empty__detail {
+  margin: 0;
+  color: var(--fg-secondary);
+}
+
+/* ---------- toast ---------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--fg);
+  color: var(--surface);
+  box-shadow: var(--shadow);
+  font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.001ms !important;
+  }
+}
