@@ -44,9 +44,9 @@ function popupFixture(name, state) {
     : `
       document.getElementById("idle").hidden = false;
       document.getElementById("save-label").textContent = "Save as PNG";
-      document.getElementById("format-status").textContent = "Lossless — largest files";
+      document.getElementById("format-status").textContent = "Lossless, largest files";
       document.getElementById("format-value").textContent = "PNG";
-      document.getElementById("overlays-status").textContent = "3 pinned elements — will be left out";
+      document.getElementById("overlays-status").textContent = "3 pinned elements will be left out";
       document.getElementById("overlays").setAttribute("aria-checked", "${state === "overlays"}");
       document.getElementById("foot-text").textContent = "Repeat with Alt+Shift+C";
       document.getElementById("foot-action").textContent = "Change";
@@ -185,7 +185,7 @@ function omniboxWidget(expression, result) {
 
 function previewWidget() {
   return `<div class="panel preview-frame">
-    <div class="preview-toolbar"><div class="preview-meta"><b>Field Notes — Design systems that last</b><span>1440 × 4860 px · shown at 72% · 3 overlays hidden</span></div><div class="preview-actions"><button class="ui-btn">Crop</button><button class="ui-btn">Actual</button><button class="ui-btn">Copy</button><button class="ui-btn primary">Save PNG</button><button class="ui-btn">WebP</button><button class="ui-btn">JPEG</button><button class="ui-btn">PDF</button></div></div>
+    <div class="preview-toolbar"><div class="preview-meta"><b>Field Notes: Design systems that last</b><span>1440 × 4860 px · shown at 72% · 3 overlays hidden</span></div><div class="preview-actions"><button class="ui-btn">Crop</button><button class="ui-btn">Actual</button><button class="ui-btn">Copy</button><button class="ui-btn primary">Save PNG</button><button class="ui-btn">WebP</button><button class="ui-btn">JPEG</button><button class="ui-btn">PDF</button></div></div>
     <div class="capture-stage"><article class="captured-page"><nav class="demo-nav"><span class="demo-logo">FIELD / NOTES</span><span class="demo-links"><span>Stories</span><span>Methods</span><span>About</span></span></nav><section class="demo-hero"><div><div class="demo-eyebrow">Issue 24 · Product craft</div><h2>Design systems that survive real work.</h2><p>A practical field guide to building interfaces that stay coherent as products, teams, and constraints grow.</p></div><div class="demo-art"></div></section><section class="demo-stats"><div class="demo-stat"><b>42</b><span>Components</span></div><div class="demo-stat"><b>7</b><span>Platforms</span></div><div class="demo-stat"><b>96%</b><span>Coverage</span></div></section><section class="demo-copy"><div><h3>Start with decisions</h3><p>Strong systems record why a pattern exists, not only how it looks. That context helps the next person make a compatible choice.</p></div><div><h3>Make quality visible</h3><p>Examples, constraints, and ownership turn a component library into a shared way of working across the whole product.</p></div></section></article></div>
   </div>`;
 }
@@ -204,7 +204,7 @@ const shots = [
   },
   {
     output: join(calcDir, "screenshot-2-percentage.png"),
-    html: omniboxPage({ classes:"paper orange", kicker:"Everyday calculations", title:"Prices, percentages, and quick checks.", sub:"Calculate directly where you already type—without sending the expression to a website.", expression:"342.50 * 1.08", result:"369.9", label:"Price plus 8%", footer:'<span>342.50 × 1.08</span><strong>369.9</strong>' }),
+    html: omniboxPage({ classes:"paper orange", kicker:"Everyday calculations", title:"Prices, percentages, and quick checks.", sub:"Calculate directly where you already type, without sending the expression to a website.", expression:"342.50 * 1.08", result:"369.9", label:"Price plus 8%", footer:'<span>342.50 × 1.08</span><strong>369.9</strong>' }),
   },
   {
     output: join(calcDir, "screenshot-3-range.png"),
@@ -212,7 +212,7 @@ const shots = [
   },
   {
     output: join(captureDir, "screenshot-1-menu.png"),
-    html: page({ classes:"paper orange", kicker:"Full Page Capture", title:"The whole page. One clean capture.", sub:"Save an entire scrollable page as one continuous image—not only what is visible on screen.", visual:previewWidget(), extra:'<div class="steps"><span class="step"><i>1</i>Choose a destination</span><span class="step"><i>2</i>Capture</span><span class="step"><i>3</i>Export</span></div>' }),
+    html: page({ classes:"paper orange", kicker:"Full Page Capture", title:"The whole page. One clean capture.", sub:"Save an entire scrollable page as one continuous image, not only what is visible on screen.", visual:previewWidget(), extra:'<div class="steps"><span class="step"><i>1</i>Choose a destination</span><span class="step"><i>2</i>Capture</span><span class="step"><i>3</i>Export</span></div>' }),
   },
   {
     output: join(captureDir, "screenshot-2-capturing.png"),
