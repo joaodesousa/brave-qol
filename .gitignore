@@ -2,6 +2,7 @@
 Thumbs.db
 desktop.ini
 .DS_Store
+store-assets/.render/
 
 # Packaged extension builds and signing keys
 dist/ — never commit a .pem, it is the

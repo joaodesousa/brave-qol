@@ -8,6 +8,7 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 const scripts = [
   "fullpage-capture/background.js",
+  "fullpage-capture/captureStore.js",
   "fullpage-capture/popup.js",
   "fullpage-capture/offscreen.js",
   "fullpage-capture/preview.js",

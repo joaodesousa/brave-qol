@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "Instant math calculations in the address bar. Type '=' followed by a space and your expression.",
   "minimum_chrome_version": "116",
+  "homepage_url": "https://github.com/joaodesousa/brave-qol",
   "background": {
     "service_worker": "background.js"
   },
