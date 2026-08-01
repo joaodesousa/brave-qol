@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "Capture an entire scrollable page as one image. No account, no cloud upload, no telemetry.",
   "minimum_chrome_version": "116",
+  "homepage_url": "https://github.com/joaodesousa/brave-qol",
   "background": {
     "service_worker": "background.js"
   },

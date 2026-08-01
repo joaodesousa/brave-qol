@@ -2,10 +2,11 @@
 Thumbs.db
 desktop.ini
 .DS_Store
+store-assets/.render/
 
 # Packaged extension builds and signing keys
-dist/ — never commit a .pem, it is the
-# private key that identifies the extension in the Chrome Web Store.
+dist/
+# Never commit a .pem. It is the private key that identifies the extension.
 *.zip
 *.crx
 *.pem

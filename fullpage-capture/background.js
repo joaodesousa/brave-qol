@@ -1,3 +1,5 @@
+importScripts("captureStore.js");
+
 const CAPTURE_DELAY_MS = 600; // must stay above 500ms: captureVisibleTab hard-caps at 2 calls/sec
 const RATE_LIMIT_RETRY_MS = 800;
 const HIDE_SETTLE_MS = 150;
@@ -691,11 +693,15 @@ async function getDestination() {
   return DESTINATIONS.includes(destination) ? destination : "file";
 }
 
-let lastCapture = null; // in memory, not storage: a capture routinely exceeds the storage quota
-
+// The pixels never travel through chrome.runtime messaging — a stitched
+// capture routinely exceeds the 64MiB cap that Chrome puts on a single
+// message, which fails silently rather than throwing. Only this id does;
+// the preview tab pulls the actual dataUrl out of IndexedDB itself.
 async function openPreview(dataUrl, meta) {
-  lastCapture = { dataUrl, ...meta, at: Date.now() };
-  await chrome.tabs.create({ url: chrome.runtime.getURL("preview.html") });
+  const id = crypto.randomUUID();
+  await qolPutCapture(id, { dataUrl, ...meta, at: Date.now() });
+  qolPruneStaleCaptures();
+  await chrome.tabs.create({ url: chrome.runtime.getURL(`preview.html?capture=${id}`) });
 }
 
 async function runCapture(tab, destination = "file") {
@@ -860,11 +866,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case "qol-count-overlays":
       countOverlaysOnActiveTab().then(sendResponse);
       return true; // async response
-
-    case "qol-get-capture":
-      sendResponse(lastCapture);
-      lastCapture = null; // collected once, then dropped
-      return false;
 
     case "qol-cancel-capture":
       // Only the tab being captured (Escape) or our own popup (no sender.tab) may cancel.

@@ -54,8 +54,12 @@ Compress-Archive -Path omnibox-calc\*     -DestinationPath dist\omnibox-calc-1.0
 Compress-Archive -Path fullpage-capture\* -DestinationPath dist\fullpage-capture-1.0.0.zip
 ```
 
-`dist/` and `.pem` signing keys are gitignored.
+```bash
+./tools/package.sh
+```
+
+Either way, `dist/` and `.pem` signing keys are gitignored.
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE). Privacy policy: [PRIVACY.md](PRIVACY.md).

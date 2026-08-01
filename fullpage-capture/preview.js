@@ -258,7 +258,8 @@ function initCropHandlers() {
 // ---------- boot ----------
 
 async function init() {
-  capture = await chrome.runtime.sendMessage({ type: "qol-get-capture" });
+  const id = new URLSearchParams(location.search).get("capture");
+  capture = id ? await qolTakeCapture(id) : null;
 
   if (!capture || !capture.dataUrl) {
     $("empty").hidden = false;
