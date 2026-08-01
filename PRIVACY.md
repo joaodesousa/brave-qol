@@ -1,23 +1,29 @@
 # Privacy Policy
 
-Last updated: 2026-07-31
+Last updated: 2026-08-01
 
 This repository contains two independent browser extensions: **Omnibox
 Calculator** (`omnibox-calc/`) and **Full Page Capture** (`fullpage-capture/`).
-Neither extension collects, stores, or transmits any personal data, browsing
-history, or usage analytics. There is no account, no server, no telemetry,
-and no third-party network requests of any kind — the source in this repo is
-exactly what runs.
+Neither extension collects or transmits personal data, browsing history, or
+usage analytics. There are no accounts or telemetry. The calculator contacts
+a third-party exchange-rate service only for currency conversions; the source
+in this repository is exactly what runs.
 
 ## Omnibox Calculator
 
 - Reads the text you type after the `=` omnibox keyword, evaluates it locally
   using the hand-written parser in `mathEval.js`, and writes the result to
   your clipboard via `clipboardWrite`.
+- Distance and weight conversions are calculated entirely on your device.
+- For a currency conversion, the two three-letter currency codes are sent to
+  `api.frankfurter.dev`. The numeric amount and the rest of the expression are
+  not sent. Returned daily reference rates are cached locally for faster use
+  and as an offline fallback. Frankfurter's own privacy terms apply to those
+  requests.
 - `activeTab` and `scripting` are used only to insert the result into the
   page you're on when requested; nothing is read from the page or sent
   anywhere.
-- No data ever leaves your device.
+- `storage` is used only for the cached currency rates.
 
 ## Full Page Capture
 

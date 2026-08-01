@@ -4,11 +4,11 @@
 </picture>
 
 Two small, independent extensions that add quality-of-life features Brave
-doesn't have but Chrome and Edge do. No accounts, servers, telemetry, or paid
-tier — a few hundred lines each, and the source here is what runs.
+doesn't have but Chrome and Edge do. No accounts, telemetry, or paid tier — a
+few hundred lines each, and the source here is what runs.
 
-- **[Omnibox Calculator](omnibox-calc/)** — type an expression in the address
-  bar and get the answer, the way Chrome and Edge do.
+- **[Omnibox Calculator](omnibox-calc/)** — calculate or convert units and
+  currencies directly in the address bar.
 - **[Full Page Capture](fullpage-capture/)** — save or copy an entire
   scrollable page as one image, not just the visible viewport.
 
@@ -25,7 +25,9 @@ They're separate — installing one doesn't install the other.
 Type `=`, a space, then an expression (`+ - * / % ^`, parentheses,
 functions like `sqrt`, `sin`, `log`). Press Enter to copy the result.
 Expressions are parsed by a hand-written parser in `mathEval.js`, not
-`eval()`.
+`eval()`. Distance and weight conversions work locally (`5 km to mi`,
+`10 lbs in kg`). Currency conversions (`20 USD to EUR`) use daily reference
+rates from Frankfurter and fall back to the last cached rate when offline.
 
 ## Full Page Capture
 
@@ -44,13 +46,13 @@ extension's card in `brave://extensions`.
 node tools/check-all.js
 ```
 
-Runs syntax checks plus six suites covering slice offsets, image stitching,
+Runs syntax checks plus seven suites covering slice offsets, image stitching,
 injection scope, UI consistency, PDF structure, and the expression parser.
 
 ## Packaging
 
 ```powershell
-Compress-Archive -Path omnibox-calc\*     -DestinationPath dist\omnibox-calc-1.0.0.zip
+Compress-Archive -Path omnibox-calc\*     -DestinationPath dist\omnibox-calc-1.1.0.zip
 Compress-Archive -Path fullpage-capture\* -DestinationPath dist\fullpage-capture-1.0.0.zip
 ```
 

@@ -1,4 +1,4 @@
-importScripts("mathEval.js");
+importScripts("mathEval.js", "conversions.js");
 
 const MAX_DECIMALS = 10;
 
@@ -16,28 +16,89 @@ function escapeXml(str) {
     .replace(/"/g, "&quot;");
 }
 
+const RATE_CACHE_MAX_AGE = 12 * 60 * 60 * 1000;
+
+async function getCurrencyRate(from, to) {
+  if (from === to) return { rate: 1, date: "", cached: false };
+
+  const cacheKey = `currency-rate:${from}:${to}`;
+  let cached;
+  try {
+    const stored = await chrome.storage.local.get(cacheKey);
+    cached = stored[cacheKey];
+  } catch (err) {
+    console.warn("Omnibox Calc: could not read the currency cache:", err);
+  }
+  if (cached && Date.now() - cached.fetchedAt < RATE_CACHE_MAX_AGE) {
+    return { ...cached, cached: true };
+  }
+
+  try {
+    const response = await fetch(`https://api.frankfurter.dev/v2/rate/${from}/${to}`);
+    if (!response.ok) throw new Error(`rate service returned ${response.status}`);
+    const data = await response.json();
+    if (!Number.isFinite(data.rate) || data.rate <= 0) throw new Error("invalid rate response");
+    const fresh = { rate: data.rate, date: data.date || "", fetchedAt: Date.now() };
+    try {
+      await chrome.storage.local.set({ [cacheKey]: fresh });
+    } catch (err) {
+      console.warn("Omnibox Calc: could not cache the currency rate:", err);
+    }
+    return { ...fresh, cached: false };
+  } catch (err) {
+    if (cached && Number.isFinite(cached.rate)) return { ...cached, cached: true };
+    throw new Error(`Currency rate unavailable: ${err.message}`);
+  }
+}
+
+async function evaluateInput(input) {
+  const conversion = self.Conversions.parseConversion(input, self.MathEval.evaluate);
+  if (!conversion) {
+    const value = self.MathEval.evaluate(input);
+    return { formatted: formatResult(value), copyText: formatResult(value), detail: "" };
+  }
+
+  if (conversion.kind === "unit") {
+    const formatted = formatResult(conversion.value);
+    return { formatted: `${formatted} ${conversion.to}`, copyText: `${formatted} ${conversion.to}`, detail: "" };
+  }
+
+  const rate = await getCurrencyRate(conversion.from, conversion.to);
+  const formatted = formatResult(conversion.amount * rate.rate);
+  const freshness = rate.date ? `rate ${rate.date}${rate.cached ? ", cached" : ""}` : "same currency";
+  return {
+    formatted: `${formatted} ${conversion.to}`,
+    copyText: `${formatted} ${conversion.to}`,
+    detail: freshness,
+  };
+}
+
 // No cached last-result variable: MV3 service workers can be killed between
 // onInputChanged and onInputEntered, so both recompute from scratch.
-chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+let inputVersion = 0;
+
+chrome.omnibox.onInputChanged.addListener((text) => {
+  const version = ++inputVersion;
   const trimmed = text.trim();
   if (!trimmed) {
     chrome.omnibox.setDefaultSuggestion({
-      description: "Type a math expression, e.g. <match>2 + 2 * 3</match>",
+      description: "Try <match>2 + 2 * 3</match>, <match>5 km to mi</match>, or <match>10 USD to EUR</match>",
     });
     return;
   }
 
-  try {
-    const value = self.MathEval.evaluate(trimmed);
-    const formatted = formatResult(value);
+  void evaluateInput(trimmed).then((result) => {
+    if (version !== inputVersion) return;
+    const detail = result.detail ? `${result.detail}; ` : "";
     chrome.omnibox.setDefaultSuggestion({
-      description: `<match>${escapeXml(trimmed)}</match> = <match>${escapeXml(formatted)}</match> <dim>(Enter to copy)</dim>`,
+      description: `<match>${escapeXml(trimmed)}</match> = <match>${escapeXml(result.formatted)}</match> <dim>(${escapeXml(detail)}Enter to copy)</dim>`,
     });
-  } catch (err) {
+  }).catch((err) => {
+    if (version !== inputVersion) return;
     chrome.omnibox.setDefaultSuggestion({
       description: `<match>${escapeXml(trimmed)}</match> <dim>- ${escapeXml(err.message || "invalid expression")}</dim>`,
     });
-  }
+  });
 });
 
 chrome.omnibox.onInputEntered.addListener(async (text) => {
@@ -45,9 +106,8 @@ chrome.omnibox.onInputEntered.addListener(async (text) => {
   if (!trimmed) return;
 
   try {
-    const value = self.MathEval.evaluate(trimmed);
-    const formatted = formatResult(value);
-    await copyToClipboard(formatted);
+    const result = await evaluateInput(trimmed);
+    await copyToClipboard(result.copyText);
   } catch (err) {
     console.error("Omnibox Calc: could not evaluate on enter:", err.message);
   }

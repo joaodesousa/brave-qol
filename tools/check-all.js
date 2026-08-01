@@ -15,9 +15,10 @@ const scripts = [
   "fullpage-capture/pdf.js",
   "omnibox-calc/background.js",
   "omnibox-calc/mathEval.js",
+  "omnibox-calc/conversions.js",
 ];
 const manifests = ["fullpage-capture/manifest.json", "omnibox-calc/manifest.json"];
-const checks = ["check-offsets.js", "check-stitch.js", "check-injection-scope.js", "check-ui.js", "check-pdf.js", "check-matheval.js"];
+const checks = ["check-offsets.js", "check-stitch.js", "check-injection-scope.js", "check-ui.js", "check-pdf.js", "check-matheval.js", "check-conversions.js"];
 
 let failed = 0;
 
